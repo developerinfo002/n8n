@@ -3,7 +3,6 @@ import { AnnotationTagMapping } from './annotation-tag-mapping.ee';
 import { ApiKey } from './api-key';
 import { AuthIdentity } from './auth-identity';
 import { AuthProviderSyncHistory } from './auth-provider-sync-history';
-import { AuthUser } from './auth-user';
 import { CredentialsEntity } from './credentials-entity';
 import { EventDestinations } from './event-destinations';
 import { ExecutionAnnotation } from './execution-annotation.ee';
@@ -18,13 +17,13 @@ import { InvalidAuthToken } from './invalid-auth-token';
 import { ProcessedData } from './processed-data';
 import { Project } from './project';
 import { ProjectRelation } from './project-relation';
+import { Role } from './role';
+import { Scope } from './scope';
 import { Settings } from './settings';
 import { SharedCredentials } from './shared-credentials';
 import { SharedWorkflow } from './shared-workflow';
 import { TagEntity } from './tag-entity';
 import { TestCaseExecution } from './test-case-execution.ee';
-import { TestDefinition } from './test-definition.ee';
-import { TestMetric } from './test-metric.ee';
 import { TestRun } from './test-run.ee';
 import { User } from './user';
 import { Variables } from './variables';
@@ -49,6 +48,8 @@ export {
 	Folder,
 	Project,
 	ProjectRelation,
+	Role,
+	Scope,
 	SharedCredentials,
 	SharedWorkflow,
 	TagEntity,
@@ -58,15 +59,12 @@ export {
 	WorkflowTagMapping,
 	FolderTagMapping,
 	AuthProviderSyncHistory,
-	AuthUser,
 	WorkflowHistory,
 	ExecutionData,
 	ExecutionMetadata,
 	AnnotationTagEntity,
 	ExecutionAnnotation,
 	AnnotationTagMapping,
-	TestDefinition,
-	TestMetric,
 	TestRun,
 	TestCaseExecution,
 	ExecutionEntity,
@@ -87,6 +85,7 @@ export const entities = {
 	Folder,
 	Project,
 	ProjectRelation,
+	Scope,
 	SharedCredentials,
 	SharedWorkflow,
 	TagEntity,
@@ -96,16 +95,14 @@ export const entities = {
 	WorkflowTagMapping,
 	FolderTagMapping,
 	AuthProviderSyncHistory,
-	AuthUser,
 	WorkflowHistory,
 	ExecutionData,
 	ExecutionMetadata,
 	AnnotationTagEntity,
 	ExecutionAnnotation,
 	AnnotationTagMapping,
-	TestDefinition,
-	TestMetric,
 	TestRun,
 	TestCaseExecution,
 	ExecutionEntity,
+	Role,
 };

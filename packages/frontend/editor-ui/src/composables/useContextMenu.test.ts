@@ -6,7 +6,12 @@ import { createPinia, setActivePinia } from 'pinia';
 import { useSourceControlStore } from '@/stores/sourceControl.store';
 import { useUIStore } from '@/stores/ui.store';
 import { useWorkflowsStore } from '@/stores/workflows.store';
-import { EXECUTE_WORKFLOW_NODE_TYPE, NodeConnectionTypes, NodeHelpers } from 'n8n-workflow';
+import {
+	EXECUTE_WORKFLOW_NODE_TYPE,
+	NodeConnectionTypes,
+	NodeHelpers,
+	WORKFLOW_TOOL_LANGCHAIN_NODE_TYPE,
+} from 'n8n-workflow';
 
 const nodeFactory = (data: Partial<INodeUi> = {}): INodeUi => ({
 	id: faker.string.uuid(),
@@ -33,18 +38,17 @@ describe('useContextMenu', () => {
 		} as never);
 
 		uiStore = useUIStore();
-		uiStore.selectedNodes = selectedNodes;
 		vi.spyOn(uiStore, 'isReadOnlyView', 'get').mockReturnValue(false);
 
 		workflowsStore = useWorkflowsStore();
 		workflowsStore.workflow.nodes = nodes;
 		workflowsStore.workflow.scopes = ['workflow:update'];
-		vi.spyOn(workflowsStore, 'getCurrentWorkflow').mockReturnValue({
+		workflowsStore.workflowObject = {
 			nodes,
 			getNode: (_: string) => {
 				return {};
 			},
-		} as never);
+		} as never;
 
 		vi.spyOn(NodeHelpers, 'getNodeInputs').mockReturnValue([]);
 		vi.spyOn(NodeHelpers, 'isExecutable').mockReturnValue(true);
@@ -92,7 +96,7 @@ describe('useContextMenu', () => {
 		expect(targetNodeIds.value).toEqual([sticky.id]);
 	});
 
-	it('should show "Open Sub-workflow" action (enabled) when node is "Execute Workflow" with a set workflow', () => {
+	it('should show "Go to Sub-workflow" action (enabled) when node is "Execute Workflow" with a set workflow', () => {
 		const { open, isOpen, actions, targetNodeIds } = useContextMenu();
 		const executeWorkflow = nodeFactory({
 			type: EXECUTE_WORKFLOW_NODE_TYPE,
@@ -113,10 +117,47 @@ describe('useContextMenu', () => {
 		expect(targetNodeIds.value).toEqual([executeWorkflow.id]);
 	});
 
-	it('should show "Open Sub-workflow" action (disabled) when node is "Execute Workflow" without a set workflow', () => {
+	it('should show "Go to Sub-workflow" action (disabled) when node is "Execute Workflow" without a set workflow', () => {
 		const { open, isOpen, actions, targetNodeIds } = useContextMenu();
 		const executeWorkflow = nodeFactory({
 			type: EXECUTE_WORKFLOW_NODE_TYPE,
+			parameters: {
+				workflowId: {},
+			},
+		});
+		vi.spyOn(workflowsStore, 'getNodeById').mockReturnValue(executeWorkflow);
+		open(mockEvent, { source: 'node-right-click', nodeId: executeWorkflow.id });
+
+		expect(isOpen.value).toBe(true);
+		expect(actions.value).toMatchSnapshot();
+		expect(targetNodeIds.value).toEqual([executeWorkflow.id]);
+	});
+
+	it('should show "Go to Sub-workflow" action (enabled) when node is "Workflow Tool" with a set workflow', () => {
+		const { open, isOpen, actions, targetNodeIds } = useContextMenu();
+		const executeWorkflow = nodeFactory({
+			type: WORKFLOW_TOOL_LANGCHAIN_NODE_TYPE,
+			parameters: {
+				workflowId: {
+					__rl: true,
+					value: 'qseYRPbw6joqU7RC',
+					mode: 'list',
+					cachedResultName: '',
+				},
+			},
+		});
+		vi.spyOn(workflowsStore, 'getNodeById').mockReturnValue(executeWorkflow);
+		open(mockEvent, { source: 'node-right-click', nodeId: executeWorkflow.id });
+
+		expect(isOpen.value).toBe(true);
+		expect(actions.value).toMatchSnapshot();
+		expect(targetNodeIds.value).toEqual([executeWorkflow.id]);
+	});
+
+	it('should show "Go to Sub-workflow" action (disabled) when node is "Workflow Tool" without a set workflow', () => {
+		const { open, isOpen, actions, targetNodeIds } = useContextMenu();
+		const executeWorkflow = nodeFactory({
+			type: WORKFLOW_TOOL_LANGCHAIN_NODE_TYPE,
 			parameters: {
 				workflowId: {},
 			},
